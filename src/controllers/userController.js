@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const {signUpUserService,loginUserService, completeProfileService} = require('../services/userService.js');
+const {signUpUserService,loginUserService, completeProfileService,getTagsService} = require('../services/userService.js');
 const  JWT_SECRET  = 'chaitanyaandpraveen';
 
 
@@ -69,7 +69,6 @@ const completeProfile = async(req,res) => {
         return res.status(200).send({
             success: true,
             data: result,
-            token,
             msg: result.msg
          });
       
@@ -83,5 +82,26 @@ const completeProfile = async(req,res) => {
     }
 }
 
+const getTags = async(req,res)=>{
+    const payload = req.body;
+    try {
+        const [result] = await getTagsService(payload);        
+        
+        return res.status(200).send({
+            success: true,
+            data: result,
+            msg: result.msg
+         });
+      
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: 'Error in get tags',
+            error,
+        });
+    }
 
-module.exports= {signUpUser,loginUser,test,completeProfile};
+}
+
+module.exports= {signUpUser,loginUser,test,completeProfile,getTags};

@@ -1,0 +1,100 @@
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spCompleteProfile`(
+    IN p JSON
+)
+BEGIN
+    DECLARE v_user_id INT;
+    DECLARE v_contact VARCHAR(20);
+    DECLARE v_linkedin_url VARCHAR(255);
+    DECLARE v_yoe INT;
+    DECLARE v_tags JSON;
+
+    -- Extract values from JSON input
+    SET v_user_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.user_id'));
+    SET v_contact = JSON_UNQUOTE(JSON_EXTRACT(p, '$.contact'));
+    SET v_linkedin_url = JSON_UNQUOTE(JSON_EXTRACT(p, '$.linkedin_url'));
+    SET v_yoe = JSON_UNQUOTE(JSON_EXTRACT(p, '$.yoe'));
+    SET v_tags = JSON_UNQUOTE(JSON_EXTRACT(p, '$.tags'));
+
+    START TRANSACTION;
+
+    -- Update evaluator table
+    UPDATE evaluator
+    SET 
+        contact = COALESCE(v_contact, contact),
+        linkedin_url = COALESCE(v_linkedin_url, linkedin_url),
+        yoe = COALESCE(v_yoe, yoe),
+        tags = COALESCE(v_tags, tags)
+    WHERE id = v_user_id;
+
+    SELECT "success" AS msg;
+
+    COMMIT;
+END
+
+==============================
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spLogin`( IN p JSON)
+BEGIN
+    DECLARE v_email VARCHAR(100);
+    DECLARE v_password VARCHAR(255);
+    DECLARE v_is_admin INT;
+    DECLARE user_pass VARCHAR(100); -- Variable to store password fetched from database
+
+    SET v_email = JSON_UNQUOTE(JSON_EXTRACT(p, '$.email'));
+    SET v_password = JSON_UNQUOTE(JSON_EXTRACT(p, '$.password'));
+    SET v_is_admin = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_admin'));
+
+    START TRANSACTION;
+
+    -- Initialize user_pass to null
+    SET user_pass = NULL;
+
+    IF v_is_admin = 1 THEN
+        -- Admin login: Fetch password from admin table
+        SELECT password INTO user_pass FROM admin WHERE email = v_email;
+    ELSE
+        -- User login: Fetch password from evaluator table
+        SELECT password INTO user_pass FROM evaluator WHERE email = v_email;
+    END IF;
+
+    -- Check if passwords match
+    IF user_pass = v_password THEN
+        SELECT 1 AS authenticated, 'Login success!' AS msg;
+    ELSE
+        SELECT 0 AS authenticated, 'Login failed!' AS msg;
+    END IF;
+
+    COMMIT;
+END
+========================
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spSignup`(IN p JSON)
+BEGIN
+    DECLARE v_name VARCHAR(100);
+    DECLARE v_email VARCHAR(100);
+    DECLARE v_password VARCHAR(255);
+
+    START TRANSACTION;
+
+    SET v_name = JSON_UNQUOTE(JSON_EXTRACT(p, '$.name'));
+    SET v_email = JSON_UNQUOTE(JSON_EXTRACT(p, '$.email'));
+    SET v_password = JSON_UNQUOTE(JSON_EXTRACT(p, '$.password'));
+
+    INSERT INTO evaluator (name, email, password)
+    VALUES (v_name, v_email, v_password);
+   
+   	select last_insert_id()as user_id,'User Created'as msg; 
+
+    COMMIT;
+END
+======================
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spGetTags`(
+    IN p JSON
+)
+BEGIN
+   
+
+    START TRANSACTION;
+
+    select * from tags;
+
+    COMMIT;
+END

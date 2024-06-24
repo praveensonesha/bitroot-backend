@@ -37,6 +37,17 @@ const completeProfileService = async(payload) => {
         throw error;
     }
 }
+const getTagsService = async(payload) => {
+    try {
+        console.log(JSON.stringify(payload))
+        const [result] = await db.query(`CALL spGetTags(?)`, [JSON.stringify(payload)]);
+        
+        return result; 
+    } catch (error) {
+        console.error("Error in getTags:", error);
+        throw error;
+    }
+}
 
 
-module.exports = { signUpUserService,loginUserService,completeProfileService};
+module.exports = { signUpUserService,loginUserService,completeProfileService,getTagsService};
