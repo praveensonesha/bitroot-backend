@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const {signUpUserService,loginUserService} = require('../services/userService.js');
+const {signUpUserService,loginUserService, completeProfileService} = require('../services/userService.js');
 const  JWT_SECRET  = 'chaitanyaandpraveen';
 
 
@@ -54,9 +54,34 @@ const loginUser = async (req, res) => {
         });
     }
 };
+
 const test = async(req,res)=>{
     console.log('inn test function');
     res.status(200).send({msg:"auth route working"})
 }
 
-module.exports= {signUpUser,loginUser,test};
+const completeProfile = async(req,res) => {
+    const payload = req.body;
+    const { contact,linkedin,yoe,tags} = payload;
+    try {
+        const [result] = await completeProfileService(payload);        
+        
+        return res.status(200).send({
+            success: true,
+            data: result,
+            token,
+            msg: result.msg
+         });
+      
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: 'Error in complete profile',
+            error,
+        });
+    }
+}
+
+
+module.exports= {signUpUser,loginUser,test,completeProfile};

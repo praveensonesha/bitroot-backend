@@ -25,5 +25,18 @@ const loginUserService = async (payload) => {
     }
 };
 
+const completeProfileService = async(payload) => {
+    const {contact,linkedin,yoe,tags} = payload;
+    try {
+        console.log(JSON.stringify(payload))
+        const [[result]] = await db.query(`CALL spCompleteProfile(?)`, [JSON.stringify(payload)]);
+        
+        return result; 
+    } catch (error) {
+        console.error("Error in CompleteProfile:", error);
+        throw error;
+    }
+}
 
-module.exports = { signUpUserService,loginUserService };
+
+module.exports = { signUpUserService,loginUserService,completeProfileService};
