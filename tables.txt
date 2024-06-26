@@ -1,0 +1,87 @@
+admin table
+
+-- bitroot_db.admin definition
+
+CREATE TABLE `admin` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `email` varchar(50) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+=======================================================================================
+
+evaluator table 
+
+-- bitroot_db.evaluator definition
+
+CREATE TABLE `evaluator` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(100) NOT NULL,
+  `email` varchar(100) NOT NULL,
+  `password` varchar(100) NOT NULL,
+  `linkedin_url` varchar(255) DEFAULT NULL,
+  `contact` varchar(20) DEFAULT NULL,
+  `yoe` int DEFAULT NULL,
+  `role` json DEFAULT NULL,
+  `tags` json DEFAULT NULL,
+  PRIMARY KEY (`id`),
+  UNIQUE KEY `email` (`email`)
+) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+
+===============================================================================================
+
+task table
+
+-- bitroot_db.task definition
+
+CREATE TABLE `task` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(255) NOT NULL,
+  `description` text,
+  `tags` json DEFAULT NULL,
+  `github_url` longtext,
+  `guideline_url` longtext,
+  `lower_price` int DEFAULT NULL,
+  `higher_price` int DEFAULT NULL,
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=13 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+=================================================================================================
+
+
+tags table
+
+-- bitroot_db.tags definition
+
+CREATE TABLE `tags` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `name` varchar(50) NOT NULL,
+  PRIMARY KEY (`id`)
+) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+================================================================================================
+
+
+assigned task 
+
+-- bitroot_db.assigned_task definition
+
+CREATE TABLE `assigned_task` (
+  `id` int NOT NULL AUTO_INCREMENT,
+  `task_id` int NOT NULL,
+  `evaluator_id` int NOT NULL,
+  `is_completed` tinyint DEFAULT '0',
+  `created_at` datetime DEFAULT CURRENT_TIMESTAMP,
+  `updated_at` datetime DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  PRIMARY KEY (`id`),
+  KEY `task_id` (`task_id`),
+  KEY `evaluator_id` (`evaluator_id`),
+  CONSTRAINT `assigned_task_ibfk_1` FOREIGN KEY (`task_id`) REFERENCES `task` (`id`),
+  CONSTRAINT `assigned_task_ibfk_2` FOREIGN KEY (`evaluator_id`) REFERENCES `evaluator` (`id`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+
+===========================================================================================================

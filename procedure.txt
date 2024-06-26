@@ -31,7 +31,7 @@ BEGIN
     COMMIT;
 END
 
-==============================
+==========================================================================================
 CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spLogin`( IN p JSON)
 BEGIN
     DECLARE v_email VARCHAR(100);
@@ -65,7 +65,7 @@ BEGIN
 
     COMMIT;
 END
-========================
+========================================================================================
 CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spSignup`(IN p JSON)
 BEGIN
     DECLARE v_name VARCHAR(100);
@@ -85,7 +85,7 @@ BEGIN
 
     COMMIT;
 END
-======================
+===================================================================================
 CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spGetTags`(
     IN p JSON
 )
@@ -98,3 +98,116 @@ BEGIN
 
     COMMIT;
 END
+
+==================================================================================================
+
+
+CREATE PROCEDURE `bitroot_db`.`spCreateTask`(
+    IN p JSON
+)
+BEGIN
+    DECLARE v_name VARCHAR(255);
+    DECLARE v_description TEXT;
+    DECLARE v_tags JSON;
+    DECLARE v_github_url LONGTEXT;
+    DECLARE v_guideline_url LONGTEXT;
+    DECLARE v_lower_price INT;
+    DECLARE v_higher_price INT;
+    DECLARE v_is_update TINYINT;
+    DECLARE v_is_delete TINYINT;
+    DECLARE v_task_id INT;
+
+    -- Extract values from JSON input
+    SET v_name = JSON_UNQUOTE(JSON_EXTRACT(p, '$.name'));
+    SET v_description = JSON_UNQUOTE(JSON_EXTRACT(p, '$.desc'));
+    SET v_tags = JSON_UNQUOTE(JSON_EXTRACT(p, '$.tags'));
+    SET v_github_url = JSON_UNQUOTE(JSON_EXTRACT(p, '$.github_url'));
+    SET v_guideline_url = JSON_UNQUOTE(JSON_EXTRACT(p, '$.guideline_url'));
+    SET v_lower_price = JSON_UNQUOTE(JSON_EXTRACT(p, '$.lower_price'));
+    SET v_higher_price = JSON_UNQUOTE(JSON_EXTRACT(p, '$.higher_price'));
+    SET v_is_update = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_update'));
+    SET v_is_delete = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_delete'));
+    SET v_task_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.id'));
+
+    START TRANSACTION;
+
+    -- Check if is_update is 1 (update operation)
+    IF v_is_update = 1 then
+    	if v_task_id is not null then
+        UPDATE task
+        SET 
+            name = COALESCE(v_name, name),
+            description = COALESCE(v_description, description),
+            tags = COALESCE(v_tags, tags),
+            github_url = COALESCE(v_github_url, github_url),
+            guideline_url = COALESCE(v_guideline_url, guideline_url),
+            lower_price = COALESCE(v_lower_price, lower_price),
+            higher_price = COALESCE(v_higher_price, higher_price)
+        WHERE id = v_task_id;
+       end if;
+       	
+        
+        SELECT v_task_id AS id, 'Task updated successfully' AS msg;
+    
+    -- Check if is_delete is 1 (delete operation)
+    ELSEIF v_is_delete = 1 then
+    	if v_task_id is not null then
+        DELETE FROM task WHERE id = v_task_id;
+       	end if;
+        
+        SELECT v_task_id AS id, 'Task deleted successfully' AS msg;
+    
+    -- Otherwise, create a new task
+    ELSE
+        -- Insert data into task table
+        INSERT INTO task (name, description, tags, github_url, guideline_url, lower_price, higher_price)
+        VALUES (v_name, v_description, v_tags, v_github_url, v_guideline_url, v_lower_price, v_higher_price);
+
+        SELECT LAST_INSERT_ID() AS id, 'Task created successfully' AS msg;
+    END IF;
+
+    COMMIT;
+END;
+========================================================================================================================
+
+
+CREATE PROCEDURE `bitroot_db`.`spAssignTask`(
+    IN p JSON
+)
+BEGIN
+    DECLARE v_evaluator_id INT;
+    DECLARE v_is_update TINYINT;
+    DECLARE v_is_delete TINYINT;
+    DECLARE v_task_id INT;
+    DECLARE v_is_completed INT;
+
+    -- Extract values from JSON input
+    SET v_evaluator_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.evaluator_id'));
+    SET v_is_update = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_update'));
+    SET v_is_delete = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_delete'));
+    SET v_task_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.task_id'));
+    SET v_is_completed = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_completed'));
+
+    START TRANSACTION;
+
+    IF v_is_update = 1 THEN
+        -- Update is_completed for existing assignment
+        UPDATE assigned_task
+        SET is_completed = v_is_completed
+        WHERE evaluator_id = v_evaluator_id AND task_id = v_task_id;
+        
+        SELECT 'Assignment updated successfully' AS msg;
+
+    ELSE
+        -- Insert new assignment
+        INSERT INTO assigned_task (evaluator_id, task_id, is_completed)
+        VALUES (v_evaluator_id, v_task_id, 0); -- Default is_completed to 0
+        
+        SELECT LAST_INSERT_ID() AS id, 'Task Assigned!' AS msg;
+
+    END IF;
+
+    COMMIT;
+END;
+
+==============================================================================================
