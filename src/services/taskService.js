@@ -11,6 +11,17 @@ const creatTaskService = async (payload) => {
     }
 };
 
+const assignTaskService = async (payload) => {
+    const {task_id,evaluator_id} = payload;
+    try {
+        const [[result]] = await db.query(`CALL spAssignTask(?)`, [JSON.stringify(payload)]);
+        return result; 
+    } catch (error) {
+        console.error("Error in assignTaskService:", error);
+        throw error;
+    }
+};
 
 
-module.exports = { creatTaskService};
+
+module.exports = { creatTaskService,assignTaskService};
