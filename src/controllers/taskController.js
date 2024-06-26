@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const {createTaskService} = require('../services/taskService.js');
+const {createTaskService,assignTaskService} = require('../services/taskService.js');
 const { requiredParams } = require('../utils/utils.js');
 const  JWT_SECRET  = 'chaitanyaandpraveen';
 
@@ -28,4 +28,27 @@ const createTask = async(req,res)=>{
     }
 }
 
-module.exports= {createTask};
+const assignTask = async(req,res)=>{
+    const payload = req.body;
+    const {task_id,evaluator_id} = payload;
+    if(!task_id || !evaluator_id)requiredParams(res,400,"task/eval id are compulsory fields !")
+
+    const result = await assignTaskService(payload);
+    try {
+        return res.status(200).send({
+            success : true,
+            data:result,
+            msg:result.msg
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+           success:false,
+           message:'Error in assign task',
+           error ,
+        });
+        
+    }
+}
+
+module.exports= {createTask,assignTask};
