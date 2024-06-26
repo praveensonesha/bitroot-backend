@@ -211,3 +211,42 @@ BEGIN
 END;
 
 ==============================================================================================
+
+CREATE PROCEDURE `bitroot_db`.`spGetTasks`(
+    IN p JSON
+)
+BEGIN
+    DECLARE v_name VARCHAR(255);
+    DECLARE v_tags JSON;
+    DECLARE v_lower_price INT;
+    DECLARE v_higher_price INT;
+   	declare v_is_assigned int;
+   	declare v_is_completed int;
+   	declare v_is_approved tinyint;
+
+    SET v_name = JSON_UNQUOTE(JSON_EXTRACT(p, '$.name'));
+    SET v_tags = JSON_UNQUOTE(JSON_EXTRACT(p, '$.tags'));
+    SET v_lower_price = JSON_UNQUOTE(JSON_EXTRACT(p, '$.lower_price'));
+    SET v_higher_price = JSON_UNQUOTE(JSON_EXTRACT(p, '$.higher_price'));
+    SET v_is_assigned = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_assigned'));
+    SET v_is_completed = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_completed'));
+   	set v_is_approved = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_approved'));
+   	
+
+    START TRANSACTION;
+
+    SELECT SQL_CALC_FOUND_ROWS *
+    FROM task t
+    WHERE 1=1
+        AND (v_name IS NULL OR t.name LIKE CONCAT('%', v_name, '%'))
+        AND (v_tags IS NULL OR JSON_CONTAINS(t.tags, v_tags))
+        AND (v_lower_price IS NULL OR t.lower_price >= v_lower_price)
+        AND (v_higher_price IS NULL OR t.higher_price <= v_higher_price)
+        and (v_is_assigned is null or t.is_assigned = v_is_assigned)
+       and (v_is_completed is null or t.is_completed = v_is_completed)
+       and (v_is_approved is null or t.is_approved = v_is_approved);
+       
+    SELECT FOUND_ROWS() AS total;
+
+    COMMIT;
+END;
