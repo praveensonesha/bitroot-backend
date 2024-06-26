@@ -4,6 +4,7 @@ const port = 3000;
 
 // Import user routes
 const userRoutes = require('./routes/userRoutes.js');
+const taskRoutes = require('./routes/taskRoutes.js');
 
 // Middleware
 app.use(express.json());
@@ -14,6 +15,7 @@ app.get('/',(req,res)=>{
 });
 
 app.use('/api/users', userRoutes);
+app.use('/api/tasks',taskRoutes);
 
 app.listen(port, () => {
   console.log(`Server is running on http://localhost:${port}`);
