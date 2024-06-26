@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const {assignTaskService,createTaskService} = require('../services/taskService.js');
+const {assignTaskService,createTaskService,getTasksService} = require('../services/taskService.js');
 const { requiredParams } = require('../utils/utils.js');
 const  JWT_SECRET  = 'chaitanyaandpraveen';
 
@@ -51,4 +51,25 @@ const assignTask = async(req,res)=>{
     }
 }
 
-module.exports= {createTask,assignTask};
+const getTasks = async(req,res)=>{
+    const payload = req.body;
+    try {
+    const [result,meta] = await getTasksService(payload);
+        return res.status(200).send({
+            success : true,
+            data:result,
+            meta:meta[0],
+            msg:result.msg
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+           success:false,
+           message:error.message || 'Error in assign task',
+           error ,
+        });
+        
+    }
+}
+
+module.exports= {createTask,assignTask,getTasks};
