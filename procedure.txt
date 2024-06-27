@@ -305,3 +305,33 @@ BEGIN
     COMMIT;
 END
 ===========================================================================================================
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spCompleteTask`(
+    IN p JSON
+)
+BEGIN
+    DECLARE v_task_id INT;
+    DECLARE v_evaluator_id INT;
+
+    -- Extract values from JSON input
+    SET v_task_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.task_id'));
+    SET v_evaluator_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.evaluator_id'));
+
+    START TRANSACTION;
+
+    -- Update is_completed in assigned_task table
+    UPDATE assigned_task
+    SET is_completed = 1
+    WHERE task_id = v_task_id AND evaluator_id = v_evaluator_id;
+
+    -- Update is_completed in task table
+    UPDATE task
+    SET is_completed = 1
+    WHERE id = v_task_id;
+
+    COMMIT;
+
+    SELECT 'Task completed successfully' AS msg;
+END;
+
+=======================================================================================================
