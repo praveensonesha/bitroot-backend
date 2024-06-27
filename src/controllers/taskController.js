@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const {assignTaskService,createTaskService,getTasksService, startTaskService} = require('../services/taskService.js');
+const {assignTaskService,createTaskService,getTasksService, startTaskService, completeTaskService} = require('../services/taskService.js');
 const { requiredParams } = require('../utils/utils.js');
 const  JWT_SECRET  = 'chaitanyaandpraveen';
 
@@ -94,5 +94,24 @@ const startTask =async(req,res) => {
 };
 
 
+const completeTask = async(req,res)=> {
+    const payload = req.body;
+    try {
+    const [result] = await completeTaskService(payload);
+        return res.status(200).send({
+            success : true,
+            data:result,
+            msg:result.msg
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+           success:false,
+           message:error.message || 'Error in Complete task',
+           error ,
+        });
+        
+    }      
+};
 
-module.exports= {createTask,assignTask,getTasks,startTask};
+module.exports= {createTask,assignTask,getTasks,startTask,completeTask};
