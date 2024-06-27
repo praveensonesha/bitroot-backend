@@ -171,7 +171,7 @@ END;
 ========================================================================================================================
 
 
-CREATE PROCEDURE `bitroot_db`.`spAssignTask`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spAssignTask`(
     IN p JSON
 )
 BEGIN
@@ -180,6 +180,7 @@ BEGIN
     DECLARE v_is_delete TINYINT;
     DECLARE v_task_id INT;
     DECLARE v_is_completed INT;
+    DECLARE v_is_interest INT;
 
     -- Extract values from JSON input
     SET v_evaluator_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.evaluator_id'));
@@ -187,6 +188,7 @@ BEGIN
     SET v_is_delete = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_delete'));
     SET v_task_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.task_id'));
     SET v_is_completed = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_completed'));
+    SET v_is_interest = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_interest'));
 
     START TRANSACTION;
 
@@ -198,17 +200,32 @@ BEGIN
         
         SELECT 'Assignment updated successfully' AS msg;
 
+    ELSEIF v_is_interest = 1 THEN
+        -- Insert into interest_task
+        INSERT INTO interest_task (evaluator_id, task_id, is_approved)
+        VALUES (v_evaluator_id, v_task_id, 0); -- Default is_approved to 0
+        
+        SELECT LAST_INSERT_ID() AS id, 'Task added to interest list!' AS msg;
+
     ELSE
         -- Insert new assignment
         INSERT INTO assigned_task (evaluator_id, task_id, is_completed)
         VALUES (v_evaluator_id, v_task_id, 0); -- Default is_completed to 0
+        
+        update task 	
+        	set assigned_to = v_evaluator_id,is_approved =1
+        	where id = v_task_id;
+        update interest_task 
+        	set is_approved = 1
+        	where task_id = v_task_id and evaluator_id = v_evaluator_id;
         
         SELECT LAST_INSERT_ID() AS id, 'Task Assigned!' AS msg;
 
     END IF;
 
     COMMIT;
-END;
+END
+
 
 ==============================================================================================
 

@@ -85,3 +85,21 @@ CREATE TABLE `assigned_task` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 
 ===========================================================================================================
+
+alter table task add column is_assigned tinyint default 0;
+alter table task add column is_completed tinyint default 0;
+alter table task add column is_approved tinyint default 0;
+alter table task add column assigned_to int default 0;
+
+-- Create the table for interest tasks
+CREATE TABLE interest_task (
+	id int primary key auto_increment,
+    task_id INT  ,
+    evaluator_id INT,
+    FOREIGN KEY (task_id) REFERENCES task(id),
+    FOREIGN KEY (evaluator_id) REFERENCES evaluator(id)
+);
+
+alter table interest_task add column created_at datetime default now();
+alter table interest_task add column updated_at datetime default now() on update now();
+alter table interest_task add column  is_approved tinyint default 0 ;
