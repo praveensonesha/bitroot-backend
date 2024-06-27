@@ -37,11 +37,13 @@ BEGIN
     DECLARE v_email VARCHAR(100);
     DECLARE v_password VARCHAR(255);
     DECLARE v_is_admin INT;
-    DECLARE user_pass VARCHAR(100); -- Variable to store password fetched from database
+    DECLARE user_pass VARCHAR(100);
+    declare v_evaluator_id int;-- Variable to store password fetched from database
 
     SET v_email = JSON_UNQUOTE(JSON_EXTRACT(p, '$.email'));
     SET v_password = JSON_UNQUOTE(JSON_EXTRACT(p, '$.password'));
     SET v_is_admin = JSON_UNQUOTE(JSON_EXTRACT(p, '$.is_admin'));
+   	
 
     START TRANSACTION;
 
@@ -51,17 +53,24 @@ BEGIN
     IF v_is_admin = 1 THEN
         -- Admin login: Fetch password from admin table
         SELECT password INTO user_pass FROM admin WHERE email = v_email;
+       	IF user_pass = v_password THEN
+        SELECT 1 AS authenticated, 'Login success!' AS msg;
+	    ELSE
+	        SELECT 0 AS authenticated, 'Login failed!' AS msg;
+	    END IF;
     ELSE
         -- User login: Fetch password from evaluator table
-        SELECT password INTO user_pass FROM evaluator WHERE email = v_email;
+    	SELECT password, id INTO user_pass, v_evaluator_id FROM evaluator WHERE email = v_email;  	
+    
+       	IF user_pass = v_password THEN
+        SELECT 1 AS authenticated,v_evaluator_id as id, 'Login success!' AS msg;
+	    ELSE
+	        SELECT 0 AS authenticated, 'Login failed!' AS msg;
+	    END IF;
     END IF;
 
     -- Check if passwords match
-    IF user_pass = v_password THEN
-        SELECT 1 AS authenticated, 'Login success!' AS msg;
-    ELSE
-        SELECT 0 AS authenticated, 'Login failed!' AS msg;
-    END IF;
+    
 
     COMMIT;
 END

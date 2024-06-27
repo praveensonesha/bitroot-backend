@@ -14,4 +14,5 @@ router.post('/protected-route',authenticateToken,test);
 router.post('/completeProfile',completeProfile);
 router.post('/getTags',getTags);
 
+
 module.exports = router;
