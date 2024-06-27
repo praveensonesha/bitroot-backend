@@ -15,12 +15,15 @@ const assignTaskService = async (payload) => {
     const {task_id,evaluator_id} = payload;
     try {
         const [[result]] = await db.query(`CALL spAssignTask(?)`, [JSON.stringify(payload)]);
+        console.log(result);
         return result; 
     } catch (error) {
         console.error("Error in assignTaskService:", error);
         throw error;
     }
 };
+
+
 const getTasksService = async (payload) => {
     const {task_id,evaluator_id} = payload;
     try {
@@ -33,6 +36,16 @@ const getTasksService = async (payload) => {
     }
 };
 
+const startTaskService = async(payload) => {
+    const { task_id } = payload;
+    try {
+        const [result] = await db.query(`CALL spstartTask(?)`, [JSON.stringify(payload)]);
+        console.log(result);
+        return result; 
+    } catch (error) {
+        console.error("Error in startTaskService:", error);
+        throw error;
+    }
+};
 
-
-module.exports = { createTaskService,assignTaskService,getTasksService};
+module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService};
