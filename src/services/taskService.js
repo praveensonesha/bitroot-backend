@@ -60,6 +60,17 @@ const completeTaskService = async (payload) => {
     }
 };
 
+const getEvalTasksService = async (payload) => {
+    const {task_id,evaluator_id} = payload;
+    try {
+        const [result,meta] = await db.query(`CALL spGetEvalTasks(?)`, [JSON.stringify(payload)]);
+        console.log(result);
+        return result; 
+    } catch (error) {
+        console.error("Error in assignTaskService:", error);
+        throw error;
+    }
+};
 
 
-module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService,completeTaskService};
+module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService,completeTaskService,getEvalTasksService};
