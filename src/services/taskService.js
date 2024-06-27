@@ -48,4 +48,18 @@ const startTaskService = async(payload) => {
     }
 };
 
-module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService};
+
+const completeTaskService = async (payload) => {
+    try {
+        const [result] = await db.query(`CALL spcompleteTask(?)`, [JSON.stringify(payload)]);
+        console.log(result);
+        return result; 
+    } catch (error) {
+        console.error("Error in completeTaskService:", error);
+        throw error;
+    }
+};
+
+
+
+module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService,completeTaskService};
