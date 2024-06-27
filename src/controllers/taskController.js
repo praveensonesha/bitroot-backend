@@ -44,7 +44,7 @@ const assignTask = async(req,res)=>{
         console.log(error)
         res.status(500).send({
            success:false,
-           message:error.message||'Error in assign task',
+           message:'Error in assign task',
            error ,
         });
         
