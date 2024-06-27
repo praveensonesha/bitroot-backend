@@ -36,6 +36,8 @@ task table
 
 -- bitroot_db.task definition
 
+-- bitroot_db.task definition
+
 CREATE TABLE `task` (
   `id` int NOT NULL AUTO_INCREMENT,
   `name` varchar(255) NOT NULL,
@@ -103,3 +105,8 @@ CREATE TABLE interest_task (
 alter table interest_task add column created_at datetime default now();
 alter table interest_task add column updated_at datetime default now() on update now();
 alter table interest_task add column  is_approved tinyint default 0 ;
+=================================================================================================
+
+task table in_progress column add
+   ALTER TABLE task
+ADD COLUMN in_progress TINYINT DEFAULT 0;

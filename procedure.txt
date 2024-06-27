@@ -266,4 +266,33 @@ BEGIN
     SELECT FOUND_ROWS() AS total;
 
     COMMIT;
-END;
+END;=
+
+==========================================================================================================================
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `bitroot_db`.`spStartTask`(
+    IN p JSON
+)
+BEGIN
+    DECLARE v_task_id INT;
+
+    -- Extract task ID from JSON input
+    SET v_task_id = JSON_UNQUOTE(JSON_EXTRACT(p, '$.task_id'));
+
+    START TRANSACTION;
+
+    -- Update inProgress column to 1 for the specified task
+    UPDATE task
+    SET in_progress = 1
+    WHERE id = v_task_id AND in_progress = 0;
+
+    -- Check if the update was successful
+    IF ROW_COUNT() > 0 THEN
+        SELECT 'Task started successfully' AS msg;
+    ELSE
+        SELECT 'Task already in progress or does not exist' AS msg;
+    END IF;
+
+    COMMIT;
+END
+===========================================================================================================
