@@ -14,7 +14,8 @@ const authenticateToken = (req, res, next) => {
             console.error('Error verifying token:', err);
             return res.status(403).send({ message: 'Invalid token!' });
         }
-        req.user = decoded; // Store decoded token payload in request object for further use
+        req.user = decoded; 
+        console.log("token verified !");
         next(); // Pass control to the next middleware or route handler
     });
 };

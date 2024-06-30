@@ -104,4 +104,30 @@ const getTags = async(req,res)=>{
 
 }
 
-module.exports= {signUpUser,loginUser,test,completeProfile,getTags};
+const verifyToken = async(req,res)=>{
+    const payload = req.body;
+    const {token} = payload;
+    try {
+        jwt.verify(token, JWT_SECRET, (err, decoded) => {
+            if (err) {
+                console.error('Error verifying token:', err);
+                return res.status(403).send({ message: 'Invalid token!' });
+            }
+        });
+        
+        return res.status(200).send({
+            success: true
+         });
+      
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: 'Error in get tags',
+            error,
+        });
+    }
+
+}
+
+module.exports= {signUpUser,loginUser,test,completeProfile,getTags,verifyToken};

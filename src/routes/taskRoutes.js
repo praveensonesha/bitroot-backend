@@ -5,11 +5,11 @@ const {authenticateToken} = require('../utils/authmiddlewares.js');
 const { createTask,assignTask, getTasks, startTask, completeTask,getEvalTasks} = require('../controllers/taskController.js');
 
 
-router.post('/createTask',createTask);
-router.post('/assignTask',assignTask);
-router.post('/getTasks',getTasks);
-router.post('/startTask',startTask);
-router.post('/completeTask',completeTask);
-router.post('/getEvalTasks',getEvalTasks);
+router.post('/createTask',authenticateToken,createTask);
+router.post('/assignTask',authenticateToken,assignTask);
+router.post('/getTasks',authenticateToken,getTasks);
+router.post('/startTask',authenticateToken,startTask);
+router.post('/completeTask',authenticateToken,completeTask);
+router.post('/getEvalTasks',authenticateToken,getEvalTasks);
 
 module.exports = router;

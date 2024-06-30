@@ -12,8 +12,8 @@ const createTask = async(req,res)=>{
         if(!is_delete && !is_update)requiredParams(res,400,"name/desc/tags/github_url/prices are compulsory fields !")
     }
 
-    const result = await createTaskService(payload);
     try {
+    const result = await createTaskService(payload);
         return res.status(200).send({
             success : true,
             data:result,

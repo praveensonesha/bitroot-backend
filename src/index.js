@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
-const port = 3000;
+const port = 3001;
+const cors = require('cors'); // Corrected import statement for CORS
 
 // Import user routes
 const userRoutes = require('./routes/userRoutes.js');
@@ -8,6 +9,8 @@ const taskRoutes = require('./routes/taskRoutes.js');
 
 // Middleware
 app.use(express.json());
+app.use(cors());
+
 
 // Use user routes
 app.get('/',(req,res)=>{
