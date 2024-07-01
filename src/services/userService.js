@@ -1,7 +1,11 @@
 const db = require("../../config/db");
+// const bcrypt = require('bcrypt');
+const crypto = require('crypto');
 
 const signUpUserService = async (payload) => {
-    const { name, email, pass } = payload;
+    let { name, email, password } = payload;
+    const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
+    payload.password = hashedPassword;
     try {
         console.log(JSON.stringify(payload))
         const [[result]] = await db.query(`CALL spSignup(?)`, [JSON.stringify(payload)]);
@@ -13,9 +17,11 @@ const signUpUserService = async (payload) => {
     }
 };
 const loginUserService = async (payload) => {
-    const { is_admin,email, pass } = payload;
+    let { is_admin,email, password } = payload;
     try {
-        console.log(JSON.stringify(payload))
+        const hashedPassword = crypto.createHash('md5').update(password).digest('hex');
+        console.log(hashedPassword);
+        payload.password = hashedPassword
         const [[result]] = await db.query(`CALL spLogin(?)`, [JSON.stringify(payload)]);
         
         return result; 
