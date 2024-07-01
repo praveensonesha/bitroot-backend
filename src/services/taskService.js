@@ -72,5 +72,15 @@ const getEvalTasksService = async (payload) => {
     }
 };
 
+const publicTaskService = async(payload) =>{
+    try {
+        const [result] = await db.query(`CALL sppublicTask(?)`, [JSON.stringify(payload)]);
+        console.log(result);
+        return result; 
+    } catch (error) {
+        console.error("Error in publicTaskService:", error);
+        throw error;
+    }
+};
 
-module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService,completeTaskService,getEvalTasksService};
+module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService,completeTaskService,getEvalTasksService,publicTaskService};
