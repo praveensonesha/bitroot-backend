@@ -7,9 +7,8 @@ const  JWT_SECRET  = 'chaitanyaandpraveen';
 const signUpUser = async(req,res)=>{
     const payload = req.body;
     const {name,email,pass} = payload;
-    console.log(payload," incontollr")
-    const result = await signUpUserService(payload);
     try {
+        const result = await signUpUserService(payload);
         return res.status(200).send({
             success : true,
             data:result,
