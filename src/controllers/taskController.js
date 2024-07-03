@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const {assignTaskService,createTaskService,getTasksService, startTaskService, completeTaskService,getEvalTasksService, publicTaskService} = require('../services/taskService.js');
+const {assignTaskService,createTaskService,getTasksService, startTaskService, completeTaskService,getEvalTasksService, publicTaskService,getHistoryService} = require('../services/taskService.js');
 const { requiredParams } = require('../utils/utils.js');
 const  JWT_SECRET  = 'chaitanyaandpraveen';
 
@@ -158,5 +158,25 @@ const publicTask = async(req,res) =>{
     }
 };
 
+const getHistory = async(req,res) =>{
+    const payload = req.body;
+    try {
+    const [result,meta] = await getHistoryService(payload);
+        return res.status(200).send({
+            success : true,
+            data:result,
+            meta:meta,
+            msg:result.msg
+        });
+    } catch (error) {
+        console.log(error)
+        res.status(500).send({
+           success:false,
+           message:error.message || 'Error in Public task',
+           error ,
+        });
+        
+    }
+};
 
-module.exports= {createTask,assignTask,getTasks,startTask,completeTask,getEvalTasks,publicTask};
+module.exports= {createTask,assignTask,getTasks,startTask,completeTask,getEvalTasks,publicTask,getHistory};
