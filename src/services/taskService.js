@@ -74,7 +74,7 @@ const getEvalTasksService = async (payload) => {
 
 const publicTaskService = async(payload) =>{
     try {
-        const [result] = await db.query(`CALL sppublicTask(?)`, [JSON.stringify(payload)]);
+        const [result] = await db.query(`CALL spPublicTask(?)`, [JSON.stringify(payload)]);
         console.log(result);
         return result; 
     } catch (error) {
@@ -83,4 +83,15 @@ const publicTaskService = async(payload) =>{
     }
 };
 
-module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService,completeTaskService,getEvalTasksService,publicTaskService};
+const getHistoryService = async(payload) =>{
+    try {
+        const [result] = await db.query(`CALL spGetHistory(?)`, [JSON.stringify(payload)]);
+        console.log(result);
+        return result; 
+    } catch (error) {
+        console.error("Error in publicTaskService:", error);
+        throw error;
+    }
+};
+
+module.exports = { createTaskService,assignTaskService,getTasksService,startTaskService,completeTaskService,getEvalTasksService,publicTaskService,getHistoryService};
