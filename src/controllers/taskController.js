@@ -55,6 +55,16 @@ const assignTask = async(req,res)=>{
 
 const getTasks = async(req,res)=>{
     const payload = req.body;
+    const {status} = payload;
+    if (status) {
+        if (status == "assigned") {
+          payload.is_assigned = 1;
+        } else if (status == "completed") {
+          payload.is_completed = 1;
+        }else if (status == "open") {
+            payload.is_open = 1;
+          }
+      }
     try {
     const [result,meta] = await getTasksService(payload);
         return res.status(200).send({
