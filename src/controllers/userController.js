@@ -1,6 +1,6 @@
 
 const jwt = require('jsonwebtoken');
-const {signUpUserService,loginUserService, completeProfileService,getTagsService} = require('../services/userService.js');
+const {signUpUserService,loginUserService, completeProfileService,getTagsService,getQuestionService, getEvalScoreService} = require('../services/userService.js');
 const  JWT_SECRET  = 'chaitanyaandpraveen';
 
 
@@ -129,4 +129,47 @@ const verifyToken = async(req,res)=>{
 
 }
 
-module.exports= {signUpUser,loginUser,test,completeProfile,getTags,verifyToken};
+const getQuestion = async(req,res) => {
+    const payload = req.body;
+    try {
+        const [result] = await getQuestionService(payload);        
+        
+        return res.status(200).send({
+            success: true,
+            data: result,
+            msg: result.msg
+         });
+      
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: 'Error in Getting Questions',
+            error,
+        });
+    }
+}
+
+const getEvalScore = async(req,res) => {
+    const payload = req.body;
+    try {
+        const [result] = await getEvalScoreService(payload);        
+        
+        return res.status(200).send({
+            success: true,
+            data: result,
+            msg: result.msg
+         });
+      
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: 'Error in Getting Questions',
+            error,
+        });
+    }
+}
+
+
+module.exports= {signUpUser,loginUser,test,completeProfile,getTags,verifyToken,getQuestion,getEvalScore};

@@ -9,7 +9,6 @@ const signUpUserService = async (payload) => {
     try {
         console.log(JSON.stringify(payload))
         const [[result]] = await db.query(`CALL spSignup(?)`, [JSON.stringify(payload)]);
-        
         return result; 
     } catch (error) {
         console.error("Error in signUpUserService:", error);
@@ -23,7 +22,6 @@ const loginUserService = async (payload) => {
         console.log(hashedPassword);
         payload.password = hashedPassword
         const [[result]] = await db.query(`CALL spLogin(?)`, [JSON.stringify(payload)]);
-        
         return result; 
     } catch (error) {
         console.error("Error in loginUserService:", error);
@@ -36,7 +34,6 @@ const completeProfileService = async(payload) => {
     try {
         console.log(JSON.stringify(payload))
         const [[result]] = await db.query(`CALL spCompleteProfile(?)`, [JSON.stringify(payload)]);
-        
         return result; 
     } catch (error) {
         console.error("Error in CompleteProfile:", error);
@@ -47,7 +44,6 @@ const getTagsService = async(payload) => {
     try {
         console.log(JSON.stringify(payload))
         const [result] = await db.query(`CALL spGetTags(?)`, [JSON.stringify(payload)]);
-        
         return result; 
     } catch (error) {
         console.error("Error in getTags:", error);
@@ -55,5 +51,25 @@ const getTagsService = async(payload) => {
     }
 }
 
+const getQuestionService = async(payload) => {
+    try {
+        console.log(JSON.stringify(payload))
+        const [result] = await db.query(`CALL spGetQuestions(?)`, [JSON.stringify(payload)]);
+        return result; 
+    } catch (error) {
+        console.error("Error in getQuestionService:", error);
+        throw error;
+    }
+}
 
-module.exports = { signUpUserService,loginUserService,completeProfileService,getTagsService};
+const getEvalScoreService= async(payload) => {
+    try {
+        console.log(JSON.stringify(payload))
+        const [result] = await db.query(`CALL spCalculateEvalScore(?)`, [JSON.stringify(payload)]);
+        return result; 
+    } catch (error) {
+        console.error("Error in getQuestionService:", error);
+        throw error;
+    }
+}
+module.exports = { signUpUserService,loginUserService,completeProfileService,getTagsService,getQuestionService,getEvalScoreService};
